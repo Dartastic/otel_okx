@@ -1,0 +1,8 @@
+// Licensed under the Apache License, Version 2.0
+// Copyright 2025, Mindful Software LLC, All rights reserved.
+
+/// Dartastic OpenTelemetry bridge for OKX (crypto exchange + Web3).
+library;
+
+export 'src/otel_okx.dart';
+export 'src/otel_okx_suppression.dart';
