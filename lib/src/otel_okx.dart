@@ -2,7 +2,6 @@
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
 import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
-import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_okx_suppression.dart';
 
@@ -54,51 +53,64 @@ Future<T> tracedOkx<T>({
   final t = tracer ?? OTel.tracerProvider().getTracer('otel_okx');
   final span = t.startSpan('okx $operation', kind: SpanKind.client);
   try {
-    span.setStringAttribute('rpc.system', 'okx');
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.system', 'okx')]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.instrument != null) {
-        span.setStringAttribute('okx.instrument', res.instrument!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('okx.instrument', res.instrument!)]));
       }
       if (res.side != null) {
-        span.setStringAttribute('okx.side', res.side!);
+        span.addAttributes(
+            OTel.attributes([OTel.attributeString('okx.side', res.side!)]));
       }
       if (res.orderType != null) {
-        span.setStringAttribute('okx.order.type', res.orderType!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('okx.order.type', res.orderType!)]));
       }
       if (res.orderId != null) {
-        span.setStringAttribute('okx.order.id', res.orderId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('okx.order.id', res.orderId!)]));
       }
       if (res.clientOrderId != null) {
-        span.setStringAttribute('okx.client_order.id', res.clientOrderId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('okx.client_order.id', res.clientOrderId!)]));
       }
       if (res.size != null) {
-        span.setDoubleAttribute('okx.size', res.size!);
+        span.addAttributes(
+            OTel.attributes([OTel.attributeDouble('okx.size', res.size!)]));
       }
       if (res.price != null) {
-        span.setDoubleAttribute('okx.price', res.price!);
+        span.addAttributes(
+            OTel.attributes([OTel.attributeDouble('okx.price', res.price!)]));
       }
       if (res.fee != null) {
-        span.setDoubleAttribute('okx.fee', res.fee!);
+        span.addAttributes(
+            OTel.attributes([OTel.attributeDouble('okx.fee', res.fee!)]));
       }
       if (res.status != null) {
-        span.setStringAttribute('okx.status', res.status!);
+        span.addAttributes(
+            OTel.attributes([OTel.attributeString('okx.status', res.status!)]));
       }
       if (res.statusCode != null) {
-        span.setIntAttribute('http.response.status_code', res.statusCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
       }
       if (res.errorCode != null) {
-        span.setStringAttribute('okx.error.code', res.errorCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('okx.error.code', res.errorCode!)]));
       }
-      final fail =
-          res.errorCode != null ||
+      final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400);
       if (fail) {
-        span.setStringAttribute(
-          ErrorResource.errorType.key,
-          res.errorCode ?? 'okx.error',
-        );
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+            ErrorResource.errorType.key,
+            res.errorCode ?? 'okx.error',
+          )
+        ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
     }
